@@ -1,38 +1,730 @@
-# autojs sdk
+operation_app = ''
+window = {
+    width: 1080,
+    height: 2340
+}
+/**
+ * 权限管理
+ */
+auto.waitFor();
+setScreenMetrics(window.width, window.height);
+if (!requestScreenCapture()) {
+    log('Screen capture fail');
+    exit();
+}
+/**
+ * 通知栏提示
+ */
+let runing_tip = floaty.rawWindow(
+    <frame gravity="center" bg="#CC999999">
+        <text padding="5 0 5 0" w="auto" h="auto" id="text" textColor='#FFFFFF'></text>
+    </frame>
+)
+runing_tip.setPosition(220, 5);
+runing_tip.setTouchable(false);
 
-基于 Autojs 的 APP、小程序自动化测试 SDK，支持：启动应用、停留等待、判断存在、文本点击、颜色点击、循环点击、坐标拾取、语音播报、通知栏提示、音量调节、震动等数十项能力。
+/**
+ * 通知栏提示内容设置
+ * @param {*} _text 提示文本
+ */
+function set_runing_tip(_text) {
+    ui.run(function () {
+        runing_tip.text.setText(operation_app + _text);
+    });
+}
 
-autojs sdk 在 Auto.js 的基础上，通过大量接口优化提升了模块的通用性，并进行丰富的功能扩展。
+/**
+ * 获取当前年月日时分秒和星期
+ */
+function get_year() {
+    let now = new Date();
+    return now.getFullYear();
+}
+function get_month() {
+    let now = new Date();
+    return now.getMonth() + 1;
+}
+/**
+ * 获取上个月月份
+ */
+function get_last_month() {
+    _month = get_month()
+    if (_month > 1 && _month <= 12) return _month - 1
+    else if (_month == 1) return 12
+    else {
+        error('月份超出范围')
+        return false
+    }
+}
 
-## 运行环境下载
+/**
+ * 返回日期
+ */
+function get_date() {
+    let now = new Date();
+    return now.getDate();
+}
+/**
+ * 返回星期
+ */
+function get_day() {
+    let now = new Date();
+    return now.getDay();
+}
+function get_hours() {
+    let now = new Date();
+    return now.getHours();
+}
+function get_minutes() {
+    let now = new Date();
+    return now.getMinutes();
+}
+function get_seconds() {
+    let now = new Date();
+    return now.getSeconds();
+}
 
-下载方式：sdk 测试阶段请加群下载 autojs 运行环境。
+/**
+ * 拆分用户设定的时间，20:59:35 分别拆为时分秒
+ * @param {string} _time 时间字符串
+ */
+function get_my_hours(_time) {
+    return Number(_time.split(":")[0])
+}
+function get_my_minutes(_time) {
+    return Number(_time.split(":")[1])
+}
+function get_my_seconds(_time) {
+    return Number(_time.split(":")[2])
+}
 
-群号：984025847
+/**
+ * 获取倒计时
+ * @param {string} _time 时间字符串
+ */
+function total_seconds_delta(_time) {
+    return ~~(time2date(_time) - new Date()) / 1000
+}
+function seconds_delta(_time) {
+    let delta_seconds = total_seconds_delta(_time)
+    return parseInt(delta_seconds % 60)
+}
+function minutes_delta(_time) {
+    let delta_seconds = total_seconds_delta(_time)
+    return parseInt(delta_seconds / 60 % 60)
+}
+function hours_delta(_time) {
+    let delta_seconds = total_seconds_delta(_time)
+    return parseInt(delta_seconds / 60 / 60 % 60)
+}
+function time2date(_time) {
+    let str_time = get_year() + '/' + get_month() + '/' + get_date() + ' ' + _time
+    return new Date(str_time)
+}
+function time2str(_time) {
+    let total_seconds = total_seconds_delta(_time)
+    let seconds = seconds_delta(_time)
+    let minutes = minutes_delta(_time)
+    let hours = hours_delta(_time)
+    if (total_seconds < 0) {
+        seconds += 59
+        hours += 23
+        minutes += 59
+    }
+    result = ''
+    if (hours != 0) result += hours + 'h '
+    if (minutes != 0) result += minutes + 'm '
+    result += seconds + 's'
+    return result
+}
 
+/**
+ * 简写的日志输出
+ */
+function error() {
+    res = Array.prototype.slice.call(arguments).join(' ')
+    toast(res)
+    console.error(res)
+    // if (operation_app != '') res = operation_app + res
+    set_runing_tip(res)
+}
+function warn() {
+    res = Array.prototype.slice.call(arguments).join(' ')
+    toast(res)
+    console.warn(res)
+    // if (operation_app != '') res = operation_app + res
+    set_runing_tip(res)
+}
+function log() {
+    res = Array.prototype.slice.call(arguments).join(' ')
+    console.log(res)
+    // if (operation_app != '') res = operation_app + res
+    set_runing_tip(res)
+}
+function verbose() {
+    res = Array.prototype.slice.call(arguments).join(' ')
+    console.verbose(res)
+    // if (operation_app != '') res = operation_app + res
+    set_runing_tip(res)
+}
 
-## 能干啥
+function set_volume(number) {
+    device.setMusicVolume(device.getMusicMaxVolume() / 100 * number)
+}
 
-使用 autojs sdk，一行代码就能完成 `语音播报`/`任意类型文本点击`/`循环点击`/`坐标拾取`/`自动权限控制`/`自动类型识别`/`自动按键监听`/`通知栏实时提示`/`自动移除最近任务`/`自动解锁` 等数十项能力，更多能力陆续开放中。
+/**
+ * 获取问候语
+ */
+function say_hi() {
+    let hour = get_hours()
+    let greet = "Hi"
+    if (hour <= 3) {
+        greet = "晚安"
+    } else if (hour < 9) {
+        greet = "早上好"
+    } else if (hour < 12) {
+        greet = "上午好"
+    } else if (hour < 14) {
+        greet = "中午好"
+    } else if (hour < 18) {
+        greet = "下午好"
+    } else if (hour < 24) {
+        greet = "晚上好"
+    }
+    return greet
+}
 
+/**
+ * 开始结束提示
+ */
+function start_tip(this_app) {
+    warn('开始执行', this_app)
+    vibrate(100)
+}
+function end_tip(operation_app) {
+    warn(operation_app, '执行完成')
+    vibrate(300)
+}
+// 普通上滑解锁
+// /**
+//  * 解锁
+//  */
+// function unlock() {
+//     while (true) {
+//         // 唤醒屏幕
+//         if (!device.isScreenOn()) {
+//             log('Wake up')
+//             device.wakeUp();
+//             // 避开锁屏界面的弹窗
+//             back()
+//         }
+//         if (has_text('画报')) {
+//             warn('尝试解锁')
+//             swipe(500, 1600, 100, 500, 200);
+//             sleep(500)
+//         } else {
+//             warn('解锁成功')
+//             break
+//         }
+//     }
+//     log('Unlocked')
+//     sleep(800);
+//     back() // 避开解锁后界面的弹窗
+//     sleep(800)
+// }
 
-## 开放的方法
+// MUI10 解锁
+function unlock() {
+    // 唤醒屏幕
+    if (!device.isScreenOn()) {
+        log('Wake up')
+        device.wakeUp();
+        // 避开锁屏界面的弹窗
+        back()
+    }
+    sleep(800)
+    if (has_text('画报')) {
+        warn('尝试解锁')
+        //下拉状态栏
+        swipe(500, 30, 500, 1000, 300);
+        sleep(400);
+        //点击时间
+        click(100, 120);
+        sleep(400);
+        //解锁 密码 
+        desc(2).findOne().click();
+        desc(3).findOne().click();
+        desc(6).findOne().click();
+        desc(9).findOne().click();
+        //等待解锁完成
+        text('闹钟').waitFor();
+        warn('Unlocked')
+        //返回主页
+        home();
+    }
+}
 
-包括但不限于以下方法，更多功能尽情期待：
-```JavaScript
+/**
+ * 获取文本类型，分别有 text、desc
+ * @param {string} _text 需要查询的文本
+ */
+function get_text_type(_text) {
+    for (i = 5; i > 0; i--) {
+        if (textContains(_text).exists()) {
+            return 'text'
+        } else if (descContains(_text).exists()) {
+            return 'desc'
+        } else {
+            // verbose(_text, '不存在 ' + i)
+            sleep(200)
+        }
+    }
+    return null
+}
+
+/**
+ * 当前屏幕是否存在文本
+ * @param {*} _text 需要查询的文本
+ */
+function has_text(_text) {
+    set_runing_tip('find ' + _text)
+    point = get_coord_by_text(_text, 'no_tip')
+    if (point != null && point.x > 0 && point.x < window.width && point.y > 0 && point.y < window.height) return true
+    return false
+}
+
+/**
+ * 震动控制
+ * @param {*} duration 震动时长
+ * @param {*} times 震动次数
+ * @param {*} delay 两次间的延迟
+ */
+function vibrate(duration, times, delay) {
+    if (delay == null) delay = 0
+    if (times == null) times = 1
+    for (i = 0; i < times; i++) {
+        device.vibrate(duration);
+        sleep(delay)
+    }
+}
+
+/**
+ * 操作失败后的提示弹窗，引导下一步操作
+ * @param {*} callback 弹窗确认后执行的函数，一般出入执行失败的函数
+ * @param {*} _text 
+ */
+function confirm_continue(callback, _text) {
+    tts_report(_text + '失败')
+    if (get_hours() < 9) {
+        sleep(2000)
+        callback(_text)
+        return
+    }
+    vibrate(1000, 3, 0)
+    if (confirm(_text + "不存在，2s 后重试？")) {
+        toast('2s 后重试')
+        sleep(2000)
+        callback(_text)
+    } else {
+        if (confirm("继续下一步？")) {
+            toast('2s 后继续')
+            sleep(2000)
+        } else {
+            toastLog('手动结束运行')
+            exit()
+        }
+    }
+}
+
+/**
+ * 任意类型的文本点击
+ * @param {*} _text 待查询的文本
+ * @param {*} tip_type 未找到时，是否需要提示，传入 no_tip 则不提示
+ */
+function click_item(_text, tip_type) {
+    wait_for(_text)
+    log('(click) ' + _text)
+    if (has_text(_text) == false && tip_type != 'no_tip') {
+        confirm_continue(click_item, _text)
+        return
+    }
+    text_type = get_text_type(_text)
+    if (text_type == 'text') {
+        click_text(_text)
+    } else if (text_type == 'desc') {
+        click_desc(_text)
+    } else if (tip_type != 'no_tip') {
+        error('Unknown type', text_type)
+    }
+}
+
+/**
+ * 任意类型的文本循环点击
+ * @param {*} _text 待查询的文本
+ * @param {*} tip_type 未找到时，是否需要提示，传入 no_tip 则不提示
+ */
+function click_item_each(_text, tip_type) {
+    wait_for(_text)
+    log('(click-each) ' + _text)
+    if (has_text(_text) == false && tip_type != 'no_tip') {
+        confirm_continue(click_item, _text)
+        return
+    }
+    text_type = get_text_type(_text)
+    if (text_type == 'text') {
+        click_text_each(_text)
+    } else if (text_type == 'desc') {
+        click_desc_each(_text)
+    } else if (tip_type != 'no_tip') {
+        error('Unknown type', text_type)
+    }
+}
+
+/**
+ * 获取文本坐标，文本点击时自动调用
+ * @param {*} _text 待查询的文本
+ * @param {*} tip_type 未找到时，是否需要提示，传入 no_tip 则不提示
+ */
+function get_coord_by_text(_text, tip_type) {
+    text_type = get_text_type(_text)
+    btn = null
+    if (text_type == null) {
+        if (tip_type != 'no_tip') confirm_continue(get_coord_by_text, _text)
+        return null
+    } else if (text_type == 'text') {
+        btn = textContains(_text).findOne()
+        if (btn.bounds().centerX() == undefined) btn = textStartsWith(_text).findOne()
+        if (btn.bounds().centerX() == undefined) btn = textEndsWith(_text).findOne()
+    } else if (text_type == 'desc') {
+        btn = descContains(_text).findOne()
+        if (btn.bounds().centerX() == undefined) btn = descStartsWith(_text).findOne()
+        if (btn.bounds().centerX() == undefined) btn = descEndsWith(_text).findOne()
+    } else {
+        if (tip_type != 'no_tip') error('Unknown type', text_type)
+        return null
+    }
+    point = btn.bounds()
+    if (point.centerX()) {
+        return {
+            x: point.centerX(),
+            y: point.centerY()
+        }
+    } else {
+        sleep(800)
+        return get_coord_by_text(_text, tip_type)
+    }
+}
+
+function click_desc(_text) {
+    point = get_coord_by_text(_text)
+    click(point.x, point.y + 10);
+    sleep(800)
+}
+function long_click_desc(_text) {
+    point = get_coord_by_text(_text)
+    log('(long-click)' + _text)
+    press(point.x, point.y + 10, 800)
+    sleep(500)
+}
+function click_desc_each(_text) {
+    let btns = descContains(_text).untilFind();
+    btns.each(function (btn) {
+        let point = btn.bounds();
+        click(point.centerX(), point.centerY() + 10);
+    })
+    sleep(800)
+}
+
+function click_text(_text) {
+    btn = textContains(_text).findOne()
+    let point = btn.bounds();
+    click(point.centerX(), point.centerY() + 10);
+    sleep(800)
+}
+function click_text_each(_text) {
+    let btns = textContains(_text).untilFind();
+    btns.each(function (btn) {
+        let point = btn.bounds();
+        click(point.centerX(), point.centerY() + 10);
+    })
+    sleep(800)
+}
+/**
+ * 通过颜色获取坐标
+ * @param {*} _color 
+ * @param {*} x 
+ * @param {*} y 
+ * @param {*} w 
+ * @param {*} h 
+ */
+function get_coord_by_color(_color, x, y, w, h) {
+    img = captureScreen();
+    verbose('(find-color)' + _color)
+    point = findColorInRegion(img, _color, x, y, w, h);
+    if (point) {
+        return point
+    }
+    return false
+}
+
+/**
+ * 0 到 200 s 随机睡眠
+ * @param {*} tip_message 睡眠时的提示消息
+ */
+function random_sleep(tip_message) {
+    if (tip_message == undefined) tip_message = 'random-sleep'
+    random_number = random(0, 200)
+    log(tip_message + ' sleep ' + random_number + ' s')
+    for (i = random_number; i >= 0; i--) {
+        if (i % 3 == 0) toast(tip_message + ' ' + i + ' s')
+        sleep(1000)
+    }
+}
+
+/**
+ * 按键监听，自动执行，按下音量加结束进程
+ */
+function key_event() {
+    threads.start(function () {
+        events.observeKey();
+        events.on("key_down", function (keyCode, events) {
+            if (keyCode == keys.volume_up) {
+                toastLog('运行结束')
+                exit();
+            }
+        });
+    });
+}
+
+// /**
+//  * 普通左右布局任务
+//  * 将即将启动的 App 从最近任务中移除
+//  * @param {*} operation_app App 名称
+//  */
+// function clear_recent(operation_app) {
+//     log('移除最近任务')
+//     home()
+//     sleep(800)
+//     recents()
+//     sleep(800)
+//     let times_swips = 0
+//     while (true) {
+//         if (has_text(operation_app)) {
+//             point = get_coord_by_text(operation_app)
+//             if (point.x < 530) {
+//                 swipe(100, 1000, 500, 1000, 500);
+//             } else if (point.x > 800) {
+//                 swipe(500, 1000, 100, 1000, 500);
+//             } else {
+//                 swipe(point.x - 330, 1400, point.x - 330, 100, 1000);
+//                 sleep(500)
+//             }
+//             times_swips++
+//             if (times_swips > 10) {
+//                 warn('重试')
+//                 times_swips = 0
+//                 clear_recent()
+//                 break
+//             }
+//         } else {
+//             break
+//         }
+//     }
+//     home()
+// }
+
+/**
+ * Mui10 任务
+ * 将即将启动的 App 从最近任务中移除
+ * @param {*} operation_app App 名称
+ */
+function clear_recent(operation_app) {
+    log('移除最近任务')
+    home()
+    sleep(800)
+    recents()
+    sleep(800)
+    let times_swips = 0
+    while (true) {
+        if (has_text(operation_app)) {
+            point = get_coord_by_text(operation_app)
+            swipe(point.x, point.y, point.x + 500, point.y, 600);
+            sleep(800)
+            times_swips++
+            if (times_swips > 10) {
+                warn('重试')
+                times_swips = 0
+                clear_recent()
+                break
+            }
+        } else {
+            break
+        }
+    }
+    home()
+}
+/**
+ * 脚本运行的前置+后置自动化操作，包括屏幕解锁，自动按键监听，移出最近任务，启动 App，执行脚本，结束进程等。
+ * @param {*} callback 启动 App 后需要执行的内容
+ * @param {*} op_app 需要启动的 App，如：网易云音乐
+ * @param {*} this_app 当前脚本描述，如：播放日推
+ * @param {*} use_tts 是否使用结束语音，传入 true 时，会在运行结束前给出语音提示
+ */
+function start_app(callback, op_app, this_app, use_tts, close_app) {
+    if (close_app == undefined) close_app = true
+    this_app = this_app != undefined ? this_app : op_app
+    operation_app = op_app + '\n'
+    while (!device.isScreenOn()) {
+        unlock();
+    }
+    key_event()
+    sleep(800)
+    if (close_app == true) clear_recent(op_app)
+    log('Launch', op_app)
+    launchApp(op_app);
+    start_tip(this_app);
+    sleep(1000)
+    if (op_app) {
+        callback();
+        end_tip(this_app);
+        if (use_tts) tts_report(this_app + '成功')
+        exit()
+    }
+}
+
+/**
+ * 给出语音提示
+ * @param {*} _text 
+ */
+function tts_report(_text) {
+    warn(_text)
+    importClass(java.io.File);
+    importClass(android.speech.tts.TextToSpeech);
+    let ttsStatus = false;
+    let ttsListener = new TextToSpeech.OnInitListener({
+        onInit: function (status) {
+            if (status == TextToSpeech.SUCCESS) {
+                let ttsSetLanguageResult = TTS.setLanguage(TTS.getDefaultVoice().getLocale()/*ttsLanguage*/);
+                if (ttsSetLanguageResult != TextToSpeech.LANG_MISSING_DATA && ttsSetLanguageResult != TextToSpeech.LANG_NOT_SUPPORTED) {
+                    ttsStatus = true;
+                    TTS.stop();
+                    speech(_text);
+                    // let file = "/sdcard/xxx.mp3";
+                    // speech(_text, file);
+                } else {
+                    toast("TTS不支持当前语言");
+                }
+            } else {
+                toast("初始化TTS失败");
+            }
+        }
+    })
+    let TTS = new TextToSpeech(context, ttsListener);
+    function speech(ttsText, fileName) {
+        if (TTS && ttsStatus) {
+            if (ttsText.length <= TextToSpeech.getMaxSpeechInputLength()) {
+                if (fileName) {
+                    let file = new File(fileName);
+                    if (!file.exists()) {
+                        file.createNewFile();
+                    }
+                    TTS.synthesizeToFile(ttsText, null, file, Math.random());
+                } else {
+                    TTS.speak(ttsText, TextToSpeech.QUEUE_FLUSH/*QUEUE_FLUSH插队，QUEUE_ADD排队*/, null);
+                }
+                return true;
+            } else {
+                toast("朗读文本过长");
+                return false;
+            }
+        } else {
+            toast("TTS未准备好");
+            return false;
+        }
+    }
+}
+
+/**
+ * 颜色点击
+ * @param {*} _color 需要点击的颜色
+ * @param {*} x 颜色区域的左上角 x 坐标
+ * @param {*} y 颜色区域的左上角 y 坐标
+ * @param {*} w 颜色区域的宽度
+ * @param {*} h 颜色区域的高度
+ */
+function click_color(_color, x, y, w, h) {
+    let point = get_coord_by_color(_color, x, y, w, h)
+    if (point) {
+        click(point.x, point.y + 20);
+        return true
+    }
+    return false
+}
+
+/**
+ * 颜色循环点击
+ * @param {*} _color 需要点击的颜色
+ * @param {*} x 颜色区域的左上角 x 坐标
+ * @param {*} y 颜色区域的左上角 y 坐标
+ * @param {*} w 颜色区域的宽度
+ * @param {*} h 颜色区域的高度
+ */
+function click_color_each(_color, x, y, w, h) {
+    let attempts = 0
+    let finded = 0
+    while (true) {
+        if (click_color(_color, x, y, w, h)) {
+            finded++
+            if (finded > 10) return
+        } else {
+            attempts++
+            if (attempts > 2) return
+        }
+        sleep(300)
+    }
+}
+
+/**
+ * 等待文本出现
+ * @param {*} _text 等待出现的文本
+ */
+function wait_for(_text) {
+    log('(wait)' + _text)
+    while (true) {
+        if (has_text(_text)) {
+            set_runing_tip('')
+            return true
+        }
+        sleep(800)
+    }
+}
+
+/**
+ * 接口描述：等待某文本出现之前的点击。
+ * 场景举例：启动网易云音乐时，等待首页出现之前，点击跳过按钮 wait_befor_click('我的', '跳过')
+ * @param {*} wait_text 等待出现的文本
+ * @param {*} click_text 需要点击的文本
+ * @param {*} timer 等待计时器，计时器越长，click_text 被点击的几率越高
+ */
+function wait_befor_click(wait_text, click_text, timer) {
+    log('(wait-click)' + click_text)
+    if (timer == undefined) timer = 10
+    for (let n = timer; n > 0; n--) {
+        if (has_text(wait_text)) {
+            break
+        } else if (has_text(click_text)) {
+            click_item(click_text, 'no_tip')
+        } else sleep(300)
+    }
+    wait_for(wait_text)
+    return
+}
+
+module.exports = {
     start_app: start_app, // 脚本运行的前置+后置自动化操作，包括屏幕解锁，自动按键监听，移出最近任务，启动 App，执行脚本，结束进程等。
     wait_for: wait_for, // 等待文本出现
     has_text: has_text, // 当前屏幕是否存在文本
     vibrate: vibrate, // 设备震动
-    click_item: click_item, // 任意类型的文本点击
-    click_color: click_color, // 颜色点击
-    click_item_each: click_item_each, // 任意类型的文本循环点击
-    click_color_each: click_color_each, // 颜色循环点击
-    wait_befor_click: wait_befor_click, // 接口描述：等待某文本出现之前的点击。 场景举例：启动网易云音乐时，等待首页出现之前，点击跳过按钮 wait_befor_click('我的', '跳过')
-    get_coord_by_color: get_coord_by_color, // 通过颜色获取坐标
-    get_coord_by_text: get_coord_by_text, // 获取文本坐标，文本点击时自动调用
-    set_volume: set_volume, // 设置设备音量
-    set_runing_tip: set_runing_tip, // 通知栏提示内容设置
     say_hi: say_hi, // 获取问候语
     log: log, // 普通日志
     warn: warn, // 警告日志
@@ -42,6 +734,13 @@ autojs sdk 在 Auto.js 的基础上，通过大量接口优化提升了模块的
     time2date: time2date, // 时间转日期
     random_sleep: random_sleep, // 0 到 200 s 随机睡眠
     total_seconds_delta: total_seconds_delta, // 获取倒计时
+    click_item: click_item, // 任意类型的文本点击
+    click_color: click_color, // 颜色点击
+    click_item_each: click_item_each, // 任意类型的文本循环点击
+    click_color_each: click_color_each, // 颜色循环点击
+    wait_befor_click: wait_befor_click, // 接口描述：等待某文本出现之前的点击。 场景举例：启动网易云音乐时，等待首页出现之前，点击跳过按钮 wait_befor_click('我的', '跳过')
+    get_coord_by_color: get_coord_by_color, // 通过颜色获取坐标
+    get_coord_by_text: get_coord_by_text, // 获取文本坐标，文本点击时自动调用
     get_last_month: get_last_month, // 获取上个月月份
     get_year: get_year, // 获取年份
     get_month: get_month, // 获取月份
@@ -50,101 +749,6 @@ autojs sdk 在 Auto.js 的基础上，通过大量接口优化提升了模块的
     get_hours: get_hours, // 返回小时
     get_minutes: get_minutes, // 返回分钟
     get_seconds: get_seconds, // 返回秒
-```
-
-## 简单上手
-
-编写基于本 sdk 的应用分为三个步骤
-1. 将 autojs_sdk/lib.js 导入运行环境
-2. 在新创建的应用中用 `require('lib')` 引入 auto_sdk，
-3. 编写主函数 `main()` 并传入 `lib.start_app()`
-
-这里展示仅用 5 行代码（主函数）开发一个基于网易云音乐的自动播放测试应用，实现的功能有 `自动解锁`/`启动网易云音乐`/`播放每日推荐歌曲`/`调节音量`/`通知栏提示操作状态`。
-
-```JavaScript
-// 导入：从 auto sdk 导入需要的方法
-let lib = require('lib')
-start_app = lib.start_app  // 启动 APP 并传入操作方法
-click_item = lib.click_item  // 点击界面上的文字
-set_volume = lib.set_volume  // 设置设备音量
-wait_befor_click = lib.wait_befor_click  // 自动跳过开屏页的广告
-
-// 编写主函数：程序启动后执行的逻辑代码。
-function main() {
-    wait_befor_click('发现', '跳过')
-    click_item('发现')
-    click_item('每日推荐')
-    click_item('播放全部')
-    set_volume(30)
+    set_volume: set_volume, // 设置设备音量
+    set_runing_tip: set_runing_tip, // 通知栏提示内容设置
 }
-
-// 启动应用：传入参数依次为：主函数，要启动的 App 名称，当前应用描述，是否语音播报执行状态。
-start_app(main, '网易云音乐', '播放日推', true)
-```
-
-## 高频函数介绍
-
-**入口函数**
-
-```JavaScript
-start_app(callback, op_app, this_app, use_tts)
-```
-
-程序入口函数，自动完成解锁、启动 App、权限控制、按键监听、通知栏提示等操作。
-
-- callback：软件启动后执行的函数，如 main
-- operation_app：需要启动的软件，如 网易云音乐
-- this_app：当前程序的描述，如 播放每日推荐
-- use_tts：执行完毕后是否使用语音提示（默认不启用）
-
-
-**文本点击**
-
-```JavaScript
-click_item(_text, tip_type)
-```
-
-自动识别文本类型，并点击文本。
-
-- _text: 待点击的文本
-- tip_type：提示类型，如果传入 no_tip，则不会在文字寻找失败后给出提示弹窗（默认启用）
-
-
-**颜色点击**
-
-```JavaScript
-click_color(_color, x, y, w, h)
-```
-
-在指定的区域点击传入的颜色
-
-- _color：待点击的颜色
-- x：区域左上角的 x 坐标
-- y：区域左上角的 y 坐标
-- w：区域宽度
-- h：区域高度
-
-
-**等待前点击**
-
-```JavaScript
-wait_befor_click(target, source)
-```
-
-在 target 出现前，如果出现 source，就点击。
-
-例如进入有开屏广告的应用前，点击 “跳过广告” 文本，有效节约启动时间：
-
-wait_befor_click('首页', '跳过')
-
-
-## 开发者的话
-
-还有很多函数等待你去发掘，比如日期时间处理，日志，坐标处理，震动，音量调节等能力，均可参考 auto_sdk/lib.js 的函数注释，同时也希望你能和我一起来完善它，一起构建一个最流行、最好用的工具；你可以将自己基于 auto_lib 编写的应用提交到 example 目录下。
-
-## 项目交流群
-
-autojs_sdk 群：984025847
-
-## 项目主页
-https://github.com/kangour/autojs_sdk
