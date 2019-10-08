@@ -15,6 +15,35 @@ autojs sdk 在 Auto.js 的基础上，通过大量接口优化提升了模块的
 使用 autojs sdk，一行代码就能完成 `语音播报`/`任意类型文本点击`/`循环点击`/`坐标拾取`/`自动权限控制`/`自动类型识别`/`自动按键监听`/`通知栏实时提示`/`自动移除最近任务`/`自动解锁` 等数十项能力，更多能力陆续开放中。
 
 
+## 简单上手
+
+编写基于 auto sdk 的应用分为三个步骤，用 `require('lib')` 引入 auto_sdk，编写主函数 `main()`，然后传入 `start_app()`。
+
+这里展示仅用 5 行代码（主函数）开发一个音乐播放应用，实现的功能有 `自动解锁`/`启动网易云音乐`/`播放每日推荐歌曲`/`调节音量`/`通知栏提示操作状态`。
+
+
+```JavaScript
+// 导入：从 auto sdk 导入需要的方法
+let lib = require('lib')
+start_app = lib.start_app
+click_item = lib.click_item
+set_volume = lib.set_volume
+wait_befor_click = lib.wait_befor_click
+
+// 编写主函数：程序启动后执行的逻辑代码。
+function main() {
+    wait_befor_click('发现', '跳过')
+    click_item('发现')
+    click_item('每日推荐')
+    click_item('播放全部')
+    set_volume(30)
+}
+
+// 启动应用：传入参数依次为：主函数，要启动的 App 名称，当前应用描述，是否语音播报执行状态。
+start_app(main, '网易云音乐', '播放日推', true)
+```
+
+
 ## 开放的方法
 
 ```JavaScript
@@ -48,34 +77,6 @@ autojs sdk 在 Auto.js 的基础上，通过大量接口优化提升了模块的
     get_hours: get_hours, // 返回小时
     get_minutes: get_minutes, // 返回分钟
     get_seconds: get_seconds, // 返回秒
-```
-
-## 简单上手
-
-编写基于 auto sdk 的应用分为三个步骤，用 `require('lib')` 引入 auto_sdk，编写主函数 `main()`，然后传入 `start_app()`。
-
-这里展示仅用 5 行代码（主函数）开发一个音乐播放应用，实现的功能有 `自动解锁`/`启动网易云音乐`/`播放每日推荐歌曲`/`调节音量`/`通知栏提示操作状态`。
-
-
-```JavaScript
-// 导入：从 auto sdk 导入需要的方法
-let lib = require('lib')
-start_app = lib.start_app
-click_item = lib.click_item
-set_volume = lib.set_volume
-wait_befor_click = lib.wait_befor_click
-
-// 编写主函数：程序启动后执行的逻辑代码。
-function main() {
-    wait_befor_click('发现', '跳过')
-    click_item('发现')
-    click_item('每日推荐')
-    click_item('播放全部')
-    set_volume(30)
-}
-
-// 启动应用：传入参数依次为：主函数，要启动的 App 名称，当前应用描述，是否语音播报执行状态。
-start_app(main, '网易云音乐', '播放日推', true)
 ```
 
 
