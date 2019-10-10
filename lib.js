@@ -167,6 +167,9 @@ function time2date(_time) {
     let str_time = get_year() + '/' + get_month() + '/' + get_date() + ' ' + _time
     return new Date(str_time)
 }
+function string2date(_time) {
+    return new Date(_time)
+}
 function time2str(_time) {
     let total_seconds = total_seconds_delta(_time)
     let seconds = seconds_delta(_time)
@@ -204,6 +207,7 @@ function warn() {
 function log() {
     res = Array.prototype.slice.call(arguments).join(' ')
     console.log(res)
+    toast(res)
     // if (operation_app != '') res = operation_app + res
     set_runing_tip(res)
 }
