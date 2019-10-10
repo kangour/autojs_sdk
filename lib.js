@@ -394,7 +394,8 @@ function confirm_continue(callback, _text) {
  *                      例如：[10, -10] 表示在点击时，x 右移 10 个点，y 上移 10 个点
  * @param {*} tip_type 未找到时，是否需要提示，传入 no_tip 则不提示
  */
-function click_item(_text, fix_coord = [0, 0], tip_type) {
+function click_item(_text, fix_coord, tip_type) {
+    if (fix_coord == undefined) fix_coord = [0, 0]
     wait_for(_text)
     log('(click) ' + _text)
     if (has_text(_text) == false && tip_type != 'no_tip') {
@@ -626,7 +627,7 @@ function clear_recent(operation_app) {
  * @param {*} use_tts 是否使用结束语音，传入 true 时，会在运行结束前给出语音提示
  */
 function start_app(callback, op_app, this_app, use_tts, close_app) {
-    if (close_app == undefined) close_app = true
+    if (close_app == undefined) close_app = false
     this_app = this_app != undefined ? this_app : op_app
     operation_app = op_app + '\n'
     while (!device.isScreenOn()) {
