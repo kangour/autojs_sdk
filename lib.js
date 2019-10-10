@@ -39,6 +39,13 @@ function set_runing_tip(_text) {
         runing_tip.text.setText(operation_app + _text);
     });
 }
+/**
+ * 修改通知栏提示的坐标
+ * @param {*} _text 提示文本
+ */
+function set_runing_tip_position(x, y) {
+    runing_tip.setPosition(x, y);
+}
 
 /**
  * 获取当前年月日时分秒和星期
