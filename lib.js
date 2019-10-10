@@ -1,7 +1,14 @@
+/**
+ * 作者：不才
+ * 邮箱：laobingm@qq.com
+ * 仓库：https://github.com/kangour/autojs_sdk
+ * 日期：2019年10月10日
+ */
+
 operation_app = ''
 window = {
     width: 1080,
-    height: 2340
+    height: 1920
 }
 /**
  * 权限管理
