@@ -784,6 +784,8 @@ function click_id(id_name) {
 }
 
 module.exports = {
+    unlock: unlock, // 解锁
+    clear_recent: clear_recent, // 结束最近任务
     start_app: start_app, // 脚本运行的前置+后置自动化操作，包括屏幕解锁，自动按键监听，移出最近任务，启动 App，执行脚本，结束进程等。
     wait_for: wait_for, // 等待文本出现
     has_text: has_text, // 当前屏幕是否存在文本
@@ -815,9 +817,9 @@ module.exports = {
     get_seconds: get_seconds, // 返回秒
     set_volume: set_volume, // 设置设备音量
     set_runing_tip: set_runing_tip, // 通知栏提示内容设置
-    key_event: key_event,
-    string2date: string2date,
-    get_last_month_year: get_last_month_year,
-    count_work_day: count_work_day,
-    set_runing_tip_position: set_runing_tip_position,
+    key_event: key_event, // 音量加结束脚本
+    string2date: string2date, // 字符串转日期
+    get_last_month_year: get_last_month_year, // 获取上个月的年份
+    count_work_day: count_work_day, // 获取工作天数
+    set_runing_tip_position: set_runing_tip_position, // 设置状态栏位置
 }
