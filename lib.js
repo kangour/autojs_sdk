@@ -73,16 +73,18 @@ function get_last_month() {
 
 /**
  * 计算单休的每月工作时长
- * @param {*} start_date 
+ * @param {*} start_date 开始时间，格式：yyyy/mm/dd
  * @param {*} end_date 
+ * @param {*} rest_days 每周休息天数
  */
-function count_work_day(start_date, end_date) {
+function count_work_day(start_date, end_date, rest_days) {
+    if (rest_days == undefined) rest_days = 1
     start_date = string2date(start_date);
     end_date = string2date(end_date);
     let delta = (end_date - start_date) / (1000 * 60 * 60 * 24);
     let weeks = 0;
     for (i = 0; i < delta; i++) {
-        if (start_date.getDay() == 0) weeks++;
+        if (start_date.getDay() < rest_days) weeks++;
         start_date = start_date.valueOf();
         start_date += 1000 * 60 * 60 * 24;
         start_date = new Date(start_date);
