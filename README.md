@@ -17,14 +17,16 @@ autojs sdk 在 Auto.js 的基础上，通过大量接口优化提升了模块的
 
 ## 简单上手
 
-编写基于 auto sdk 的应用分为三个步骤，用 `require('lib')` 引入 auto_sdk，编写主函数 `main()`，然后传入 `start_app()`。
+编写基于 auto sdk 的应用前，请将 lib.js 放在脚本目录。
+
+分为三个步骤，用 `require('lib')` 引入 auto_sdk，编写主函数 `main()`，然后传入 `start_app()`。
 
 这里展示仅用 5 行代码（主函数）开发一个音乐播放应用，实现的功能有 `自动解锁`/`启动网易云音乐`/`播放每日推荐歌曲`/`调节音量`/`通知栏提示操作状态`。
 
 
 ```JavaScript
 // 导入：从 auto sdk 导入需要的方法
-let lib = require('lib')
+let lib = require('lib.js')
 start_app = lib.start_app
 click_item = lib.click_item
 set_volume = lib.set_volume
@@ -51,15 +53,6 @@ start_app(main, '网易云音乐', '播放日推', true)
     wait_for: wait_for, // 等待文本出现
     has_text: has_text, // 当前屏幕是否存在文本
     vibrate: vibrate, // 设备震动
-    click_item: click_item, // 任意类型的文本点击
-    click_color: click_color, // 颜色点击
-    click_item_each: click_item_each, // 任意类型的文本循环点击
-    click_color_each: click_color_each, // 颜色循环点击
-    wait_befor_click: wait_befor_click, // 接口描述：等待某文本出现之前的点击。 场景举例：启动网易云音乐时，等待首页出现之前，点击跳过按钮 wait_befor_click('我的', '跳过')
-    get_coord_by_color: get_coord_by_color, // 通过颜色获取坐标
-    get_coord_by_text: get_coord_by_text, // 获取文本坐标，文本点击时自动调用
-    set_volume: set_volume, // 设置设备音量
-    set_runing_tip: set_runing_tip, // 通知栏提示内容设置
     say_hi: say_hi, // 获取问候语
     log: log, // 普通日志
     warn: warn, // 警告日志
@@ -69,6 +62,14 @@ start_app(main, '网易云音乐', '播放日推', true)
     time2date: time2date, // 时间转日期
     random_sleep: random_sleep, // 0 到 200 s 随机睡眠
     total_seconds_delta: total_seconds_delta, // 获取倒计时
+    click_item: click_item, // 任意类型的文本点击
+    click_color: click_color, // 颜色点击
+    click_id: click_id,
+    click_item_each: click_item_each, // 任意类型的文本循环点击
+    click_color_each: click_color_each, // 颜色循环点击
+    wait_befor_click: wait_befor_click, // 接口描述：等待某文本出现之前的点击。 场景举例：启动网易云音乐时，等待首页出现之前，点击跳过按钮 wait_befor_click('我的', '跳过')
+    get_coord_by_color: get_coord_by_color, // 通过颜色获取坐标
+    get_coord_by_text: get_coord_by_text, // 获取文本坐标，文本点击时自动调用
     get_last_month: get_last_month, // 获取上个月月份
     get_year: get_year, // 获取年份
     get_month: get_month, // 获取月份
@@ -77,6 +78,13 @@ start_app(main, '网易云音乐', '播放日推', true)
     get_hours: get_hours, // 返回小时
     get_minutes: get_minutes, // 返回分钟
     get_seconds: get_seconds, // 返回秒
+    set_volume: set_volume, // 设置设备音量
+    set_runing_tip: set_runing_tip, // 通知栏提示内容设置
+    key_event: key_event, // 音量加结束脚本
+    string2date: string2date, // 字符串转日期
+    get_last_month_year: get_last_month_year, // 获取上个月的年份
+    count_work_day: count_work_day, // 获取工作天数
+    set_runing_tip_position: set_runing_tip_position, // 设置状态栏位置
 ```
 
 
