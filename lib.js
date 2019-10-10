@@ -775,6 +775,11 @@ function wait_befor_click(wait_text, click_text, timer) {
     return
 }
 
+
+function click_id(id_name) {
+    id(id_name).findOne().click()
+}
+
 module.exports = {
     start_app: start_app, // 脚本运行的前置+后置自动化操作，包括屏幕解锁，自动按键监听，移出最近任务，启动 App，执行脚本，结束进程等。
     wait_for: wait_for, // 等待文本出现
@@ -791,6 +796,7 @@ module.exports = {
     total_seconds_delta: total_seconds_delta, // 获取倒计时
     click_item: click_item, // 任意类型的文本点击
     click_color: click_color, // 颜色点击
+    click_id: click_id,
     click_item_each: click_item_each, // 任意类型的文本循环点击
     click_color_each: click_color_each, // 颜色循环点击
     wait_befor_click: wait_befor_click, // 接口描述：等待某文本出现之前的点击。 场景举例：启动网易云音乐时，等待首页出现之前，点击跳过按钮 wait_befor_click('我的', '跳过')
