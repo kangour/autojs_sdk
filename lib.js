@@ -387,11 +387,14 @@ function confirm_continue(callback, _text) {
 }
 
 /**
- * 任意类型的文本点击
+ * 文本点击
  * @param {*} _text 待查询的文本
+ * @param {*} fix_coord 修复坐标位置，传入一个数组，第一位是 x 坐标，第二位是 y 坐标。
+ *                      应用中的页面结构决定了获取的坐标准确性，调试时，可以用开发者工具打开指针位置，查看点击位置是否正确，错误的点击位置则需要传入修复的坐标。
+ *                      例如：[10, -10] 表示在点击时，x 右移 10 个点，y 上移 10 个点
  * @param {*} tip_type 未找到时，是否需要提示，传入 no_tip 则不提示
  */
-function click_item(_text, tip_type) {
+function click_item(_text, fix_coord = [0, 0], tip_type) {
     wait_for(_text)
     log('(click) ' + _text)
     if (has_text(_text) == false && tip_type != 'no_tip') {
@@ -400,9 +403,9 @@ function click_item(_text, tip_type) {
     }
     text_type = get_text_type(_text)
     if (text_type == 'text') {
-        click_text(_text)
+        click_text(_text, fix_coord)
     } else if (text_type == 'desc') {
-        click_desc(_text)
+        click_desc(_text, fix_coord)
     } else if (tip_type != 'no_tip') {
         error('Unknown type', text_type)
     }
@@ -465,17 +468,19 @@ function get_coord_by_text(_text, tip_type) {
     }
 }
 
-function click_desc(_text) {
+function click_desc(_text, fix_coord) {
     point = get_coord_by_text(_text)
-    click(point.x, point.y + 10);
+    click(point.x + fix_coord[0], point.y + 10 + fix_coord[1]);
     sleep(800)
 }
+
 function long_click_desc(_text) {
     point = get_coord_by_text(_text)
     log('(long-click)' + _text)
     press(point.x, point.y + 10, 800)
     sleep(500)
 }
+
 function click_desc_each(_text) {
     let btns = descContains(_text).untilFind();
     btns.each(function (btn) {
@@ -485,10 +490,10 @@ function click_desc_each(_text) {
     sleep(800)
 }
 
-function click_text(_text) {
+function click_text(_text, fix_coord) {
     btn = textContains(_text).findOne()
     let point = btn.bounds();
-    click(point.centerX(), point.centerY() + 10);
+    click(point.centerX() + fix_coord[0], point.centerY() + 10 + fix_coord[1]);
     sleep(800)
 }
 function click_text_each(_text) {
