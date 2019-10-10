@@ -812,4 +812,9 @@ module.exports = {
     get_seconds: get_seconds, // 返回秒
     set_volume: set_volume, // 设置设备音量
     set_runing_tip: set_runing_tip, // 通知栏提示内容设置
+    key_event: key_event,
+    string2date: string2date,
+    get_last_month_year: get_last_month_year,
+    count_work_day: count_work_day,
+    set_runing_tip_position: set_runing_tip_position,
 }
