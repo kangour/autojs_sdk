@@ -25,12 +25,8 @@ autojs sdk 在 Auto.js 的基础上，通过大量接口优化提升了模块的
 
 
 ```JavaScript
-// 导入：从 auto sdk 导入需要的方法
-let lib = require('lib.js')
-start_app = lib.start_app
-click_item = lib.click_item
-set_volume = lib.set_volume
-wait_befor_click = lib.wait_befor_click
+// 导入：从 lib.js 导入需要的方法
+let { start_app, click_item, set_volume, wait_befor_click } = require('lib.js');
 
 // 编写主函数：程序启动后执行的逻辑代码。
 function main() {
