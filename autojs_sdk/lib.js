@@ -507,6 +507,53 @@ function click_text_each(_text) {
     })
     sleep(800)
 }
+
+function has_color(_color, x, y, w, h) {
+    return find_color(_color, x, y, w, h)
+}
+
+function find_color(_color, x, y, w, h) {
+    if (x == undefined) {
+        x = 0
+        y = 0
+        w = device.width
+        h = device.height
+    }
+    image = captureScreen();
+    let point = findColorInRegion(image, _color, x, y, w, h);
+    if (point) return point
+    else {
+        sleep(200)
+        return null
+    }
+}
+
+/**
+ * 等待某区域颜色出现，持续 10s
+ * @param {*} _color 
+ * @param {*} x 
+ * @param {*} y 
+ * @param {*} w 
+ * @param {*} h 
+ */
+function wait_for_color(_color, x, y, w, h) {
+    let n = 0
+    while (true) {
+        log('wait_for_color', _color)
+        verbose('(find-color)' + _color)
+        point = find_color(_color, x, y, w, h)
+        if (point) return point
+        else {
+            sleep(1000)
+            n++
+        }
+        if (n > 10) {
+            warn('not found', _color)
+            return null
+        }
+    }
+}
+
 /**
  * 通过颜色获取坐标
  * @param {*} _color 
@@ -516,13 +563,8 @@ function click_text_each(_text) {
  * @param {*} h 
  */
 function get_coord_by_color(_color, x, y, w, h) {
-    img = captureScreen();
     verbose('(find-color)' + _color)
-    point = findColorInRegion(img, _color, x, y, w, h);
-    if (point) {
-        return point
-    }
-    return false
+    return wait_for_color(_color, x, y, w, h)
 }
 
 /**
@@ -748,10 +790,15 @@ function click_color_each(_color, x, y, w, h) {
  */
 function wait_for(_text) {
     log('(wait)' + _text)
+    let n = 0
     while (true) {
+        n++
         if (has_text(_text)) {
             set_runing_tip('')
             return true
+        } else {
+            set_runing_tip('查找(' + _text + ')第' + n + '次')
+
         }
         sleep(800)
     }
@@ -783,7 +830,52 @@ function click_id(id_name) {
     id(id_name).findOne().click()
 }
 
+function swipe_down() {
+    swipe(500, 500, 500, 1500, 500)
+    sleep(800)
+}
+
+function swipe_up() {
+    swipe(500, 1500, 500, 100, 500)
+    sleep(800)
+}
+
+/**
+ * 提醒用户，接下来的操作需要注意（用户确认后，方可继续）
+ * @param {*} _text 
+ */
+function be_careful(_text) {
+    log('请注意，', _text)
+    while (true) {
+        if (confirm(_text)) break;
+        else sleep(1000);
+    }
+    sleep(1000);
+}
+
+/**
+ * 提醒用户，接下来的操作需要人工处理（用户确认后，方可继续）
+ * @param {*} _text 
+ */
+function handwork(_text, timer) {
+    timer = timer === undefined ? 2 : timer
+    let timer_backup = timer
+    log('人工', _text)
+    while (true) {
+        for (timer; timer > 0; timer--) {
+            sleep(1000);
+            toast('倒计时 ' + timer + ' s');
+        }
+        if (confirm('已经' + _text + '?')) break;
+        else timer = timer_backup + 1
+    }
+}
+
 module.exports = {
+    swipe_up: swipe_up,
+    handwork: handwork,
+    be_careful: be_careful,
+    swipe_down: swipe_down,
     unlock: unlock, // 解锁
     clear_recent: clear_recent, // 结束最近任务
     start_app: start_app, // 脚本运行的前置+后置自动化操作，包括屏幕解锁，自动按键监听，移出最近任务，启动 App，执行脚本，结束进程等。
@@ -802,6 +894,9 @@ module.exports = {
     click_item: click_item, // 任意类型的文本点击
     click_color: click_color, // 颜色点击
     click_id: click_id,
+    find_color: find_color,
+    has_color: has_color,
+    wait_for_color: wait_for_color,
     click_item_each: click_item_each, // 任意类型的文本循环点击
     click_color_each: click_color_each, // 颜色循环点击
     wait_befor_click: wait_befor_click, // 接口描述：等待某文本出现之前的点击。 场景举例：启动网易云音乐时，等待首页出现之前，点击跳过按钮 wait_befor_click('我的', '跳过')
