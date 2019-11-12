@@ -1,8 +1,5 @@
 /**
- * 作者：不才
- * 邮箱：laobingm@qq.com
  * 仓库：https://github.com/kangour/autojs_sdk
- * 日期：2019年10月10日
  */
 
 operation_app = ''
@@ -10,6 +7,7 @@ window = {
     width: device.width,
     height: device.height,
 }
+
 /**
  * 权限管理
  */
@@ -19,6 +17,7 @@ if (!requestScreenCapture()) {
     log('Screen capture fail');
     exit();
 }
+
 /**
  * 通知栏提示
  */
@@ -39,211 +38,13 @@ function set_runing_tip(_text) {
         runing_tip.text.setText(operation_app + _text);
     });
 }
+
 /**
  * 修改通知栏提示的坐标
  * @param {*} _text 提示文本
  */
 function set_runing_tip_position(x, y) {
     runing_tip.setPosition(x, y);
-}
-
-/**
- * 获取当前年月日时分秒和星期
- */
-function get_year() {
-    let now = new Date();
-    return now.getFullYear();
-}
-function get_month() {
-    let now = new Date();
-    return now.getMonth() + 1;
-}
-/**
- * 获取上个月月份
- */
-function get_last_month() {
-    _month = get_month()
-    if (_month > 1 && _month <= 12) return _month - 1
-    else if (_month == 1) return 12
-    else {
-        error('月份超出范围')
-        return false
-    }
-}
-
-/**
- * 计算单休的每月工作时长
- * @param {*} start_date 开始时间，格式：yyyy/mm/dd
- * @param {*} end_date 
- * @param {*} rest_days 每周休息天数
- */
-function count_work_day(start_date, end_date, rest_days) {
-    if (rest_days == undefined) rest_days = 1
-    start_date = string2date(start_date);
-    end_date = string2date(end_date);
-    let delta = (end_date - start_date) / (1000 * 60 * 60 * 24);
-    let weeks = 0;
-    for (i = 0; i < delta; i++) {
-        if (start_date.getDay() < rest_days) weeks++;
-        start_date = start_date.valueOf();
-        start_date += 1000 * 60 * 60 * 24;
-        start_date = new Date(start_date);
-    }
-    return delta - weeks;
-}
-
-/**
- * 计算上个月的年份
- * @param {*} start_date 
- * @param {*} end_date 
- */
-function get_last_month_year() {
-    let now = new Date();
-    now = now.valueOf();
-    now -= 20 * 1000 * 60 * 60 * 24;
-    let last_month_date = new Date(now);
-    return last_month_date.getFullYear();
-}
-
-/**
- * 返回日期
- */
-function get_date() {
-    let now = new Date();
-    return now.getDate();
-}
-/**
- * 返回星期
- */
-function get_day() {
-    let now = new Date();
-    return now.getDay();
-}
-function get_hours() {
-    let now = new Date();
-    return now.getHours();
-}
-function get_minutes() {
-    let now = new Date();
-    return now.getMinutes();
-}
-function get_seconds() {
-    let now = new Date();
-    return now.getSeconds();
-}
-
-/**
- * 拆分用户设定的时间，20:59:35 分别拆为时分秒
- * @param {string} _time 时间字符串
- */
-function get_my_hours(_time) {
-    return Number(_time.split(":")[0])
-}
-function get_my_minutes(_time) {
-    return Number(_time.split(":")[1])
-}
-function get_my_seconds(_time) {
-    return Number(_time.split(":")[2])
-}
-
-/**
- * 获取倒计时
- * @param {string} _time 时间字符串
- */
-function total_seconds_delta(_time) {
-    return ~~(time2date(_time) - new Date()) / 1000
-}
-function seconds_delta(_time) {
-    let delta_seconds = total_seconds_delta(_time)
-    return parseInt(delta_seconds % 60)
-}
-function minutes_delta(_time) {
-    let delta_seconds = total_seconds_delta(_time)
-    return parseInt(delta_seconds / 60 % 60)
-}
-function hours_delta(_time) {
-    let delta_seconds = total_seconds_delta(_time)
-    return parseInt(delta_seconds / 60 / 60 % 60)
-}
-function time2date(_time) {
-    let str_time = get_year() + '/' + get_month() + '/' + get_date() + ' ' + _time
-    return new Date(str_time)
-}
-function string2date(_time) {
-    return new Date(_time)
-}
-function time2str(_time) {
-    let total_seconds = total_seconds_delta(_time)
-    let seconds = seconds_delta(_time)
-    let minutes = minutes_delta(_time)
-    let hours = hours_delta(_time)
-    if (total_seconds < 0) {
-        seconds += 59
-        hours += 23
-        minutes += 59
-    }
-    result = ''
-    if (hours != 0) result += hours + 'h '
-    if (minutes != 0) result += minutes + 'm '
-    result += seconds + 's'
-    return result
-}
-
-/**
- * 简写的日志输出
- */
-function error() {
-    res = Array.prototype.slice.call(arguments).join(' ')
-    // toast(res)
-    console.error(res)
-    // if (operation_app != '') res = operation_app + res
-    set_runing_tip(res)
-}
-function warn() {
-    res = Array.prototype.slice.call(arguments).join(' ')
-    toast(res)
-    console.warn(res)
-    // if (operation_app != '') res = operation_app + res
-    set_runing_tip(res)
-}
-function log() {
-    res = Array.prototype.slice.call(arguments).join(' ')
-    console.log(res)
-    // toast(res)
-    // if (operation_app != '') res = operation_app + res
-    set_runing_tip(res)
-}
-function verbose() {
-    res = Array.prototype.slice.call(arguments).join(' ')
-    console.verbose(res)
-    // if (operation_app != '') res = operation_app + res
-    set_runing_tip(res)
-}
-
-function set_volume(number) {
-    device.setMusicVolume(device.getMusicMaxVolume() / 100 * number)
-}
-
-/**
- * 获取问候语
- */
-function say_hi() {
-    let hour = get_hours()
-    let greet = "Hi"
-    if (hour <= 3) {
-        greet = "晚安"
-    } else if (hour < 9) {
-        greet = "早上好"
-    } else if (hour < 12) {
-        greet = "上午好"
-    } else if (hour < 14) {
-        greet = "中午好"
-    } else if (hour < 18) {
-        greet = "下午好"
-    } else if (hour < 24) {
-        greet = "晚上好"
-    }
-    return greet
 }
 
 /**
@@ -343,6 +144,14 @@ function has_text(_text) {
     point = get_coord_by_text(_text, 'no_tip')
     if (point != null && point.x > 0 && point.x < window.width && point.y > 0 && point.y < window.height) return true
     return false
+}
+
+/**
+ * 设备音量
+ * @param {*} number 
+ */
+function set_volume(number) {
+    device.setMusicVolume(device.getMusicMaxVolume() / 100 * number)
 }
 
 /**
@@ -825,6 +634,200 @@ function wait_befor_click(wait_text, click_text, timer) {
     return
 }
 
+/**
+ * 获取当前年月日时分秒和星期
+ */
+function get_year() {
+    let now = new Date();
+    return now.getFullYear();
+}
+function get_month() {
+    let now = new Date();
+    return now.getMonth() + 1;
+}
+/**
+ * 获取上个月月份
+ */
+function get_last_month() {
+    _month = get_month()
+    if (_month > 1 && _month <= 12) return _month - 1
+    else if (_month == 1) return 12
+    else {
+        error('月份超出范围')
+        return false
+    }
+}
+
+/**
+ * 计算单休的每月工作时长
+ * @param {*} start_date 开始时间，格式：yyyy/mm/dd
+ * @param {*} end_date 
+ * @param {*} rest_days 每周休息天数
+ */
+function count_work_day(start_date, end_date, rest_days) {
+    if (rest_days == undefined) rest_days = 1
+    start_date = string2date(start_date);
+    end_date = string2date(end_date);
+    let delta = (end_date - start_date) / (1000 * 60 * 60 * 24);
+    let weeks = 0;
+    for (i = 0; i < delta; i++) {
+        if (start_date.getDay() < rest_days) weeks++;
+        start_date = start_date.valueOf();
+        start_date += 1000 * 60 * 60 * 24;
+        start_date = new Date(start_date);
+    }
+    return delta - weeks;
+}
+
+/**
+ * 计算上个月的年份
+ * @param {*} start_date 
+ * @param {*} end_date 
+ */
+function get_last_month_year() {
+    let now = new Date();
+    now = now.valueOf();
+    now -= 20 * 1000 * 60 * 60 * 24;
+    let last_month_date = new Date(now);
+    return last_month_date.getFullYear();
+}
+
+/**
+ * 返回日期
+ */
+function get_date() {
+    let now = new Date();
+    return now.getDate();
+}
+/**
+ * 返回星期
+ */
+function get_day() {
+    let now = new Date();
+    return now.getDay();
+}
+function get_hours() {
+    let now = new Date();
+    return now.getHours();
+}
+function get_minutes() {
+    let now = new Date();
+    return now.getMinutes();
+}
+function get_seconds() {
+    let now = new Date();
+    return now.getSeconds();
+}
+
+/**
+ * 拆分用户设定的时间，20:59:35 分别拆为时分秒
+ * @param {string} _time 时间字符串
+ */
+function get_my_hours(_time) {
+    return Number(_time.split(":")[0])
+}
+function get_my_minutes(_time) {
+    return Number(_time.split(":")[1])
+}
+function get_my_seconds(_time) {
+    return Number(_time.split(":")[2])
+}
+
+/**
+ * 获取倒计时
+ * @param {string} _time 时间字符串
+ */
+function total_seconds_delta(_time) {
+    return ~~(time2date(_time) - new Date()) / 1000
+}
+function seconds_delta(_time) {
+    let delta_seconds = total_seconds_delta(_time)
+    return parseInt(delta_seconds % 60)
+}
+function minutes_delta(_time) {
+    let delta_seconds = total_seconds_delta(_time)
+    return parseInt(delta_seconds / 60 % 60)
+}
+function hours_delta(_time) {
+    let delta_seconds = total_seconds_delta(_time)
+    return parseInt(delta_seconds / 60 / 60 % 60)
+}
+function time2date(_time) {
+    let str_time = get_year() + '/' + get_month() + '/' + get_date() + ' ' + _time
+    return new Date(str_time)
+}
+function string2date(_time) {
+    return new Date(_time)
+}
+function time2str(_time) {
+    let total_seconds = total_seconds_delta(_time)
+    let seconds = seconds_delta(_time)
+    let minutes = minutes_delta(_time)
+    let hours = hours_delta(_time)
+    if (total_seconds < 0) {
+        seconds += 59
+        hours += 23
+        minutes += 59
+    }
+    result = ''
+    if (hours != 0) result += hours + 'h '
+    if (minutes != 0) result += minutes + 'm '
+    result += seconds + 's'
+    return result
+}
+
+/**
+ * 简写的日志输出
+ */
+function error() {
+    res = Array.prototype.slice.call(arguments).join(' ')
+    // toast(res)
+    console.error(res)
+    // if (operation_app != '') res = operation_app + res
+    set_runing_tip(res)
+}
+function warn() {
+    res = Array.prototype.slice.call(arguments).join(' ')
+    toast(res)
+    console.warn(res)
+    // if (operation_app != '') res = operation_app + res
+    set_runing_tip(res)
+}
+function log() {
+    res = Array.prototype.slice.call(arguments).join(' ')
+    console.log(res)
+    // toast(res)
+    // if (operation_app != '') res = operation_app + res
+    set_runing_tip(res)
+}
+function verbose() {
+    res = Array.prototype.slice.call(arguments).join(' ')
+    console.verbose(res)
+    // if (operation_app != '') res = operation_app + res
+    set_runing_tip(res)
+}
+
+/**
+ * 获取问候语
+ */
+function say_hi() {
+    let hour = get_hours()
+    let greet = "Hi"
+    if (hour <= 3) {
+        greet = "晚安"
+    } else if (hour < 9) {
+        greet = "早上好"
+    } else if (hour < 12) {
+        greet = "上午好"
+    } else if (hour < 14) {
+        greet = "中午好"
+    } else if (hour < 18) {
+        greet = "下午好"
+    } else if (hour < 24) {
+        greet = "晚上好"
+    }
+    return greet
+}
 
 function click_id(id_name) {
     id(id_name).findOne().click()
