@@ -4,11 +4,7 @@
 
 autojs sdk 在 Auto.js 的基础上，通过大量接口优化提升了模块的通用性，并进行丰富的功能扩展。
 
-## 运行环境下载
-
-下载方式：sdk 测试阶段请加群下载 autojs 运行环境。
-
-群号：984025847
+仅支持安卓，组织 QQ 群：984025847
 
 ## 能干啥
 
@@ -104,13 +100,11 @@ start_app(callback, op_app, this_app, use_tts)
 **文本点击**
 
 ```JavaScript
-click_item(_text, tip_type)
+click_item(_text)
 ```
 
 自动识别文本类型，并点击文本。
-
 - _text: 待点击的文本
-- tip_type：提示类型，如果传入 no_tip，则不会在文字寻找失败后给出提示弹窗（默认启用）
 
 
 **颜色点击**
