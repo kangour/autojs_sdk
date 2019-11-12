@@ -194,7 +194,7 @@ function time2str(_time) {
  */
 function error() {
     res = Array.prototype.slice.call(arguments).join(' ')
-    toast(res)
+    // toast(res)
     console.error(res)
     // if (operation_app != '') res = operation_app + res
     set_runing_tip(res)
@@ -209,7 +209,7 @@ function warn() {
 function log() {
     res = Array.prototype.slice.call(arguments).join(' ')
     console.log(res)
-    toast(res)
+    // toast(res)
     // if (operation_app != '') res = operation_app + res
     set_runing_tip(res)
 }
@@ -818,10 +818,10 @@ function wait_befor_click(wait_text, click_text, timer) {
         if (has_text(wait_text)) {
             break
         } else if (has_text(click_text)) {
-            click_item(click_text, 'no_tip')
-        } else sleep(300)
+            click_item(click_text)
+        } else sleep(600)
     }
-    wait_for(wait_text)
+    // wait_for(wait_text)
     return
 }
 
