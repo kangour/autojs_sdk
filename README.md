@@ -40,6 +40,8 @@ start_app(main, '网易云音乐', '播放日推', true)
 
 ## 开放的方法
 
+这里列举了部分方法，更多详见 autojs_sdk/lib.js 的 module.exports 部分。
+
 ```JavaScript
     start_app: start_app, // 脚本运行的前置+后置自动化操作，包括屏幕解锁，自动按键监听，移出最近任务，启动 App，执行脚本，结束进程等。
     wait_for: wait_for, // 等待文本出现
@@ -50,33 +52,15 @@ start_app(main, '网易云音乐', '播放日推', true)
     warn: warn, // 警告日志
     error: error, // 错误日志
     verbose: verbose, // 调试日志
-    time2str: time2str, // 时间转字符串
-    time2date: time2date, // 时间转日期
-    random_sleep: random_sleep, // 0 到 200 s 随机睡眠
-    total_seconds_delta: total_seconds_delta, // 获取倒计时
     click_item: click_item, // 任意类型的文本点击
     click_color: click_color, // 颜色点击
-    click_id: click_id,
     click_item_each: click_item_each, // 任意类型的文本循环点击
     click_color_each: click_color_each, // 颜色循环点击
     wait_befor_click: wait_befor_click, // 接口描述：等待某文本出现之前的点击。 场景举例：启动网易云音乐时，等待首页出现之前，点击跳过按钮 wait_befor_click('我的', '跳过')
     get_coord_by_color: get_coord_by_color, // 通过颜色获取坐标
     get_coord_by_text: get_coord_by_text, // 获取文本坐标，文本点击时自动调用
-    get_last_month: get_last_month, // 获取上个月月份
-    get_year: get_year, // 获取年份
-    get_month: get_month, // 获取月份
-    get_date: get_date, // 返回日期
-    get_day: get_day, // 返回星期
-    get_hours: get_hours, // 返回小时
-    get_minutes: get_minutes, // 返回分钟
-    get_seconds: get_seconds, // 返回秒
     set_volume: set_volume, // 设置设备音量
     set_runing_tip: set_runing_tip, // 通知栏提示内容设置
-    key_event: key_event, // 音量加结束脚本
-    string2date: string2date, // 字符串转日期
-    get_last_month_year: get_last_month_year, // 获取上个月的年份
-    count_work_day: count_work_day, // 获取工作天数
-    set_runing_tip_position: set_runing_tip_position, // 设置状态栏位置
 ```
 
 
@@ -125,7 +109,7 @@ click_color(_color, x, y, w, h)
 **等待前点击**
 
 ```JavaScript
-    wait_befor_click(target, source)
+wait_befor_click(target, source)
 ```
 
 在 target 出现前，如果出现 source，就点击。
